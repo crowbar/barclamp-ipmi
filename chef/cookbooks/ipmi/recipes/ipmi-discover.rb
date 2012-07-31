@@ -26,7 +26,7 @@ unless ::File.exists?("/usr/sbin/ipmitool") or ::File.exists?("/usr/bin/ipmitool
     when "redhat","centos"
       package_name "OpenIPMI-tools"
     end
-    action :install
+    action :upgrade
   end
 end
 
