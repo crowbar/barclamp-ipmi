@@ -16,6 +16,8 @@
         "ipmi": { "type": "map", "required": true, "mapping": {
             "crowbar-revision": { "type": "int", "required": true },
             "crowbar-committing": { "type": "bool" },
+            "crowbar-status": { "type": "str" },
+            "crowbar-failed": { "type": "str" },
             "crowbar-queued": { "type": "bool" },
             "element_states": { "type": "map", "mapping": {
                 = : { "type": "seq", "required": true,
