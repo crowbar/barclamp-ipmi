@@ -5,7 +5,7 @@
     "ipmi": {
 	  "bmc_enable" : true,
 	  "bmc_user": "root",
-	  "bmc_password": "crowbar",
+	  "bmc_password": "cr0wBar!",
 	  "debug": true
 	 }
   },
