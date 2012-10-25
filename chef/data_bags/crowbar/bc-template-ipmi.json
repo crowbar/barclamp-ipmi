@@ -6,6 +6,8 @@
 	  "bmc_enable" : true,
 	  "bmc_user": "root",
 	  "bmc_password": "cr0wBar!",
+      "ignore_address_suggestions": false,
+      "use_dhcp": true,
 	  "debug": true
 	 }
   },
@@ -14,12 +16,16 @@
       "crowbar-revision": 0,
       "element_states": {
         "ipmi-configure": [ "hardware-installing" ],
-        "ipmi-discover": [ "discovering" ]
+        "ipmi-discover": [ "discovering", "hardware-installing" ]
       },
       "elements": {},
       "element_order": [
-        [ "ipmi-configure"  ]
+        [ "ipmi-configure", "ipmi-discover"  ]
       ],
+      "element_run_list_order": {
+        "ipmi-configure": 15,
+        "ipmi-discover": 16
+      },
       "config": {
         "environment": "ipmi-base-config",
         "mode": "full",
