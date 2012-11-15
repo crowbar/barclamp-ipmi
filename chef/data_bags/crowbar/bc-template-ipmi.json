@@ -7,7 +7,7 @@
 	  "bmc_user": "root",
 	  "bmc_password": "cr0wBar!",
       "ignore_address_suggestions": false,
-      "use_dhcp": true,
+      "use_dhcp": false,
 	  "debug": true
 	 }
   },
