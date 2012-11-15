@@ -22,7 +22,3 @@ default[:ipmi][:bmc_password] = "crowbar"
 default[:ipmi][:bmc_enable] = true
 default[:ipmi][:debug] = true 
 
-default[:crowbar][:network][:bmc][:address] = "192.168.124.161"
-default[:crowbar][:network][:bmc][:netmask] = "255.255.255.0"
-default[:crowbar][:network][:bmc][:router] = "192.168.124.10"
-

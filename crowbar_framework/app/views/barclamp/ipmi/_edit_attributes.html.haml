@@ -18,6 +18,14 @@
       %input#bmc_password{:type => "text", :name => "bmc_password", :'data-default' => @proposal.raw_data['attributes'][@proposal.barclamp]["bmc_password"], :onchange => "update_value('bmc_password', 'bmc_password', 'string')"}
 
     %p
+      %label{ :for => :use_dhcp }= t('.use_dhcp')
+      = select_tag :use_dhcp, options_for_select([['true','true'], ['false', 'false']], @proposal.raw_data['attributes'][@proposal.barclamp]["use_dhcp"].to_s), :onchange => "update_value('use_dhcp', 'use_dhcp', 'boolean')"
+
+    %p
+      %label{ :for => :ignore_address_suggestions }= t('.ignore_suggestion')
+      = select_tag :ignore_address_suggestions, options_for_select([['true','true'], ['false', 'false']], @proposal.raw_data['attributes'][@proposal.barclamp]["ignore_address_suggestions"].to_s), :onchange => "update_value('ignore_address_suggestions', 'ignore_address_suggestions', 'boolean')"
+
+    %p
       %label{ :for => :debug }= t('.debug')
       = select_tag :debug, options_for_select([['true','true'], ['false', 'false']], @proposal.raw_data['attributes'][@proposal.barclamp]["debug"].to_s), :onchange => "update_value('debug', 'debug', 'boolean')"
 

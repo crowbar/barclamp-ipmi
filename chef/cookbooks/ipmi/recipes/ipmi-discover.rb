@@ -43,17 +43,22 @@ if node[:ipmi][:bmc_enable]
     return
   end
 
-  %x{modprobe ipmi_si ; modprobe ipmi_devintf ; sleep 15}
-  %x{ipmitool lan print 1 > /tmp/lan.print}
+  ruby_block "discover ipmi settings" do
+    block do
+      %x{modprobe ipmi_si ; modprobe ipmi_devintf ; sleep 15}
+      %x{ipmitool lan print 1 > /tmp/lan.print}
 
-  node["crowbar_wall"] = {} unless node["crowbar_wall"]
-  node["crowbar_wall"]["ipmi"] = {} unless node["crowbar_wall"]["ipmi"]
-  node["crowbar_wall"]["ipmi"]["address"] = %x{grep "IP Address   " /tmp/lan.print | awk -F" " '\{print $4\}'}.strip
-  node["crowbar_wall"]["ipmi"]["gateway"] = %x{grep "Default Gateway IP " /tmp/lan.print | awk -F" " '\{ print $5 \}'}.strip
-  node["crowbar_wall"]["ipmi"]["netmask"] = %x{grep "Subnet Mask" /tmp/lan.print | awk -F" " '\{ print $4 \}'}.strip
-  node["crowbar_wall"]["ipmi"]["mode"] = %x{ipmitool delloem lan get}.strip
-  node.save
+      node["crowbar_wall"] = {} unless node["crowbar_wall"]
+      node["crowbar_wall"]["ipmi"] = {} unless node["crowbar_wall"]["ipmi"]
+      node["crowbar_wall"]["ipmi"]["address"] = %x{grep "IP Address   " /tmp/lan.print | awk -F" " '\{print $4\}'}.strip
+      node["crowbar_wall"]["ipmi"]["gateway"] = %x{grep "Default Gateway IP " /tmp/lan.print | awk -F" " '\{ print $5 \}'}.strip
+      node["crowbar_wall"]["ipmi"]["netmask"] = %x{grep "Subnet Mask" /tmp/lan.print | awk -F" " '\{ print $4 \}'}.strip
+      node["crowbar_wall"]["ipmi"]["mode"] = %x{ipmitool delloem lan get}.strip
+      node.save
 
-  %x{rmmod ipmi_si ; rmmod ipmi_devintf ; rmmod ipmi_msghandler}
+      %x{rmmod ipmi_si ; rmmod ipmi_devintf ; rmmod ipmi_msghandler}
+    end
+    action :create
+  end
 end
 
