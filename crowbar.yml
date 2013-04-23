@@ -54,9 +54,9 @@ rpms:
   redhat-5.7:
     pkgs:
       - OpenIPMI-tools
-  redhat-6.2:
+  redhat-6.4:
     pkgs:
       - ipmitool
-  centos-6.2:
+  centos-6.4:
     pkgs:
       - ipmitool
