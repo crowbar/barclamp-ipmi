@@ -8,7 +8,7 @@
 	  "bmc_password": "cr0wBar!",
       "ignore_address_suggestions": false,
       "use_dhcp": false,
-	  "debug": true
+	  "debug": false
 	 }
   },
   "deployment": {
