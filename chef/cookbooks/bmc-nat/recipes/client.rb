@@ -22,7 +22,8 @@ bmc_subnet    = nets[:bmc][:subnet]
 bmc_netmask   = nets[:bmc][:netmask]
 admin_subnet  = nets[:admin][:subnet]
 admin_netmask = nets[:admin][:netmask]
-nat_node = search(:node, "roles:bmc-nat-router")[0] rescue return
+nat_node = search(:node, "roles:bmc-nat-router").first rescue return
+return if nat_node.nil?
 nat_address = nat_node[:crowbar][:network][:admin][:address]
 
 return if admin_subnet == bmc_subnet && admin_netmask == bmc_netmask
