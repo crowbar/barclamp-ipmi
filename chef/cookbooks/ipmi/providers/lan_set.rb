@@ -31,27 +31,24 @@ action :run do
   if ::File.exists?("/sys/module/ipmi_si")
     unless check_ipmi_lan_value(name, value)
       # Set BMC LAN parameters 
-      bash "#{name} settle time" do
-        code "sleep #{settle_time}"
-        action :nothing
+      ruby_block "bmc-set-lan-#{name}" do
+        block do
+          %x{#{command}}
+          if $?.exitstatus == 0
+            %x{sleep #{settle_time}}
+            node["crowbar_wall"]["status"]["ipmi"]["messages"] << "#{name} set to #{value}" unless node.nil?
+            node["crowbar_wall"]["status"]["ipmi"]["address_set"] = true if name == "IP Address"
+          else
+            node["crowbar_wall"]["status"]["ipmi"]["messages"] << "Unable to set #{name} to #{value}" unless node.nil?
+          end
+        end
       end
-
-      bash "bmc-set-lan-#{name}" do
-        code <<-EOH
-#{command}
-EOH
-        notifies :run, resources(:bash => "#{name} settle time"), :immediately
-      end 
-
-      node["crowbar_wall"]["status"]["ipmi"]["messages"] << "#{name} set to #{value}" unless node.nil?
     else
       node["crowbar_wall"]["status"]["ipmi"]["messages"] << "#{name} already set to #{value}" unless node.nil?
+      node["crowbar_wall"]["status"]["ipmi"]["address_set"] = true if name == "IP Address"
     end
-
-    node["crowbar_wall"]["status"]["ipmi"]["address_set"] = true if name == "IP Address"
   else
     node["crowbar_wall"]["status"]["ipmi"]["messages"] << "Unsupported product found #{node[:dmi][:system][:product_name]} - skipping IPMI:#{name}" unless node.nil?
   end  
   node.save
 end
-
