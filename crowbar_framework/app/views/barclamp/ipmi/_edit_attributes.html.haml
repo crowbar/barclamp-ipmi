@@ -15,7 +15,7 @@
 
     %p
       %label{ :for => :bmc_password }= t('.bmc_password')
-      %input#bmc_password{:type => "text", :name => "bmc_password", :'data-default' => @proposal.raw_data['attributes'][@proposal.barclamp]["bmc_password"], :onchange => "update_value('bmc_password', 'bmc_password', 'string')"}
+      %input#bmc_password{:type => "password", :name => "bmc_password", :'data-default' => @proposal.raw_data['attributes'][@proposal.barclamp]["bmc_password"], :onchange => "update_value('bmc_password', 'bmc_password', 'string')"}
 
     %p
       %label{ :for => :use_dhcp }= t('.use_dhcp')
