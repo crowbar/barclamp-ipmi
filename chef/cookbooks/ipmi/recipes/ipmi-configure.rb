@@ -18,7 +18,7 @@
 
 include_recipe "utils"
 
-unless ::File.exists?("/usr/sbin/ipmitool") or ::File.exists?("/usr/bin/ipmitool")
+unless node[:platform] == "windows" and (::File.exists?("/usr/sbin/ipmitool") or ::File.exists?("/usr/bin/ipmitool"))
   package "ipmitool" do
     case node[:platform]
     when "ubuntu","debian"
@@ -66,13 +66,15 @@ if node[:ipmi][:bmc_enable]
     node["crowbar_wall"]["status"]["ipmi"]["messages"] = []
     node.save
 
-    ipmi_load "ipmi_load" do
-      settle_time 30
-      action :run
+    unless node[:platform] == "windows"
+      ipmi_load "ipmi_load" do
+        settle_time 30
+        action :run
+      end
     end
   end
   
-  unless node["crowbar_wall"]["status"]["ipmi"]["address_set"]
+  unless node[:platform] == "windows" and node["crowbar_wall"]["status"]["ipmi"]["address_set"]
     if use_dhcp
       ### lan parameters to check and set. The loop that follows iterates over this array.
       # [0] = name in "print" output, [1] command to issue, [2] desired value.
@@ -129,15 +131,17 @@ if node[:ipmi][:bmc_enable]
     end
   end
 
-  unless node["crowbar_wall"]["status"]["ipmi"]["user_set"]
+  unless node[:platform] == "windows" and node["crowbar_wall"]["status"]["ipmi"]["user_set"]
     ipmi_user_set "#{bmc_user}" do
       password bmc_password
       action :run
     end
   end
 
-  ipmi_unload "ipmi_unload" do
-    action :run
+  unless node[:platform] == "windows"
+    ipmi_unload "ipmi_unload" do
+      action :run
+    end
   end
 
 end

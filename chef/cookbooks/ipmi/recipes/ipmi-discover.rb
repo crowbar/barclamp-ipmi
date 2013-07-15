@@ -18,7 +18,7 @@
 
 include_recipe "utils"
 
-unless ::File.exists?("/usr/sbin/ipmitool") or ::File.exists?("/usr/bin/ipmitool")
+unless node[:platform] == "windows" and (::File.exists?("/usr/sbin/ipmitool") or ::File.exists?("/usr/bin/ipmitool"))
   package "ipmitool" do
     case node[:platform]
     when "ubuntu","debian"
@@ -43,31 +43,33 @@ if node[:ipmi][:bmc_enable]
     return
   end
 
-  ruby_block "discover ipmi settings" do
-    block do
-      %x{modprobe ipmi_si ; modprobe ipmi_devintf ; sleep 15}
-      %x{ipmitool lan print 1 > /tmp/lan.print}
+  if node[:platform] != "windows"
+    ruby_block "discover ipmi settings" do
+      block do
+        %x{modprobe ipmi_si ; modprobe ipmi_devintf ; sleep 15}
+        %x{ipmitool lan print 1 > /tmp/lan.print}
 
-      if $?.exitstatus == 0
-        node["crowbar_wall"] = {} unless node["crowbar_wall"]
-        node["crowbar_wall"]["ipmi"] = {} unless node["crowbar_wall"]["ipmi"]
-        node["crowbar_wall"]["ipmi"]["address"] = %x{grep "IP Address   " /tmp/lan.print | awk -F" " '\{print $4\}'}.strip
-        node["crowbar_wall"]["ipmi"]["gateway"] = %x{grep "Default Gateway IP " /tmp/lan.print | awk -F" " '\{ print $5 \}'}.strip
-        node["crowbar_wall"]["ipmi"]["netmask"] = %x{grep "Subnet Mask" /tmp/lan.print | awk -F" " '\{ print $4 \}'}.strip
-        node["crowbar_wall"]["ipmi"]["mode"] = %x{ipmitool delloem lan get}.strip
-      else
-        node["crowbar_wall"] = {} unless node["crowbar_wall"]
-        node["crowbar_wall"]["status"] = {} unless node["crowbar_wall"]["status"]
-        node["crowbar_wall"]["status"]["ipmi"] = {} unless node["crowbar_wall"]["status"]["ipmi"]
-        node["crowbar_wall"]["status"]["ipmi"]["messages"] = [ "Could not get IPMI lan info: #{node[:dmi][:system][:product_name]} - turning off ipmi for this node" ]
-        node[:ipmi][:bmc_enable] = false
+        if $?.exitstatus == 0
+          node["crowbar_wall"] = {} unless node["crowbar_wall"]
+          node["crowbar_wall"]["ipmi"] = {} unless node["crowbar_wall"]["ipmi"]
+          node["crowbar_wall"]["ipmi"]["address"] = %x{grep "IP Address   " /tmp/lan.print | awk -F" " '\{print $4\}'}.strip
+          node["crowbar_wall"]["ipmi"]["gateway"] = %x{grep "Default Gateway IP " /tmp/lan.print | awk -F" " '\{ print $5 \}'}.strip
+          node["crowbar_wall"]["ipmi"]["netmask"] = %x{grep "Subnet Mask" /tmp/lan.print | awk -F" " '\{ print $4 \}'}.strip
+          node["crowbar_wall"]["ipmi"]["mode"] = %x{ipmitool delloem lan get}.strip
+        else
+          node["crowbar_wall"] = {} unless node["crowbar_wall"]
+          node["crowbar_wall"]["status"] = {} unless node["crowbar_wall"]["status"]
+          node["crowbar_wall"]["status"]["ipmi"] = {} unless node["crowbar_wall"]["status"]["ipmi"]
+          node["crowbar_wall"]["status"]["ipmi"]["messages"] = [ "Could not get IPMI lan info: #{node[:dmi][:system][:product_name]} - turning off ipmi for this node" ]
+          node[:ipmi][:bmc_enable] = false
+        end
+
+        node.save
+
+        %x{rmmod ipmi_si ; rmmod ipmi_devintf ; rmmod ipmi_msghandler}
       end
-
-      node.save
-
-      %x{rmmod ipmi_si ; rmmod ipmi_devintf ; rmmod ipmi_msghandler}
-    end
     action :create
+    end
   end
 end
 
