@@ -18,7 +18,7 @@
 
 include_recipe "utils"
 
-unless node[:platform] == "windows" and (::File.exists?("/usr/sbin/ipmitool") or ::File.exists?("/usr/bin/ipmitool"))
+unless node[:platform] == "windows" or ::File.exists?("/usr/sbin/ipmitool") or ::File.exists?("/usr/bin/ipmitool")
   package "ipmitool" do
     case node[:platform]
     when "ubuntu","debian"
