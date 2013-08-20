@@ -74,7 +74,7 @@ if node[:ipmi][:bmc_enable]
     end
   end
   
-  unless node[:platform] == "windows" and node["crowbar_wall"]["status"]["ipmi"]["address_set"]
+  unless node[:platform] == "windows" or node["crowbar_wall"]["status"]["ipmi"]["address_set"]
     if use_dhcp
       ### lan parameters to check and set. The loop that follows iterates over this array.
       # [0] = name in "print" output, [1] command to issue, [2] desired value.
@@ -131,7 +131,7 @@ if node[:ipmi][:bmc_enable]
     end
   end
 
-  unless node[:platform] == "windows" and node["crowbar_wall"]["status"]["ipmi"]["user_set"]
+  unless node[:platform] == "windows" or node["crowbar_wall"]["status"]["ipmi"]["user_set"]
     ipmi_user_set "#{bmc_user}" do
       password bmc_password
       action :run
