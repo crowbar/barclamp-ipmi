@@ -55,7 +55,6 @@ if node[:ipmi][:bmc_enable]
         end
         %x{modprobe ipmi_devintf ; sleep 15}
         %x{ipmitool lan print 1 > /tmp/lan.print}
-
         if $?.exitstatus == 0
           node["crowbar_wall"] = {} unless node["crowbar_wall"]
           node["crowbar_wall"]["ipmi"] = {} unless node["crowbar_wall"]["ipmi"]

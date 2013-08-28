@@ -19,10 +19,8 @@ action :run do
   settle_time = new_resource.settle_time
 
   if ::File.exists?("/sys/module/ipmi_devintf")
-    
     # some assumptions on ID here!
     username == "root" ? user_id = "2" : user_id = "3"
-
     user_commands = [
       [ "name", "ipmitool user set name #{user_id} #{username}" ],
       [ "password", "ipmitool user set password #{user_id} #{password}" ],
