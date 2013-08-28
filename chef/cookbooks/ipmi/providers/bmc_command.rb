@@ -33,7 +33,7 @@ action :run do
   path = nil unless ::File.exists?("#{path}/updates/bmc")
 
 
-  if ::File.exists?("/sys/module/ipmi_si") and !path.nil?
+  if ::File.exists?("/sys/module/ipmi_devintf") and !path.nil?
     unless check_bmc_value("#{path}#{test}", value)
       # Set BMC LAN parameters 
       bash "#{name} settle time" do

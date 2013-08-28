@@ -28,7 +28,7 @@ action :run do
   value = new_resource.value
   settle_time = new_resource.settle_time
 
-  if ::File.exists?("/sys/module/ipmi_si")
+  if ::File.exists?("/sys/module/ipmi_devintf")
     unless check_ipmi_lan_value(name, value)
       # Set BMC LAN parameters 
       ruby_block "bmc-set-lan-#{name}" do
