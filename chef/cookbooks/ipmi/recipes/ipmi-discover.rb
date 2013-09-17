@@ -33,11 +33,11 @@ end
 unsupported = [ "KVM", "Bochs", "VMWare Virtual Platform", "VMware Virtual Platform", "VirtualBox" ]
 
 if node[:platform] == "windows"
-    node["crowbar_wall"] = {} unless node["crowbar_wall"]
-    node["crowbar_wall"]["status"] = {} unless node["crowbar_wall"]["status"]
-    node["crowbar_wall"]["status"]["ipmi"] = {} unless node["crowbar_wall"]["status"]["ipmi"]
-    node["crowbar_wall"]["status"]["ipmi"]["messages"] = [ "Unsupported platform - turning off ipmi for this node" ]
-    node[:ipmi][:bmc_enable] = false
+    node.set["crowbar_wall"] = {} unless node["crowbar_wall"]
+    node.set["crowbar_wall"]["status"] = {} unless node["crowbar_wall"]["status"]
+    node.set["crowbar_wall"]["status"]["ipmi"] = {} unless node["crowbar_wall"]["status"]["ipmi"]
+    node.set["crowbar_wall"]["status"]["ipmi"]["messages"] = [ "Unsupported platform - turning off ipmi for this node" ]
+    node.set[:ipmi][:bmc_enable] = false
     node.save
     return
 elsif node[:ipmi][:bmc_enable]
