@@ -37,8 +37,8 @@ if node[:ipmi][:bmc_enable]
     node["crowbar_wall"] = {} unless node["crowbar_wall"]
     node["crowbar_wall"]["status"] = {} unless node["crowbar_wall"]["status"]
     node["crowbar_wall"]["status"]["ipmi"] = {} unless node["crowbar_wall"]["status"]["ipmi"]
-    node["crowbar_wall"]["status"]["ipmi"]["messages"] = [ "Unsupported platform: #{node[:dmi][:system][:product_name]} - turning off ipmi for this node" ]
-    node[:ipmi][:bmc_enable] = false
+    node.set["crowbar_wall"]["status"]["ipmi"]["messages"] = [ "Unsupported platform: #{node[:dmi][:system][:product_name]} - turning off ipmi for this node" ]
+    node.set[:ipmi][:bmc_enable] = false
     node.save
     return
   end
