@@ -18,11 +18,9 @@ action :run do
   password = new_resource.password
   settle_time = new_resource.settle_time
 
-  if ::File.exists?("/sys/module/ipmi_si")
-    
+  if ::File.exists?("/sys/module/ipmi_devintf")
     # some assumptions on ID here!
     username == "root" ? user_id = "2" : user_id = "3"
-
     user_commands = [
       [ "name", "ipmitool user set name #{user_id} #{username}" ],
       [ "password", "ipmitool user set password #{user_id} #{password}" ],
@@ -30,7 +28,6 @@ action :run do
       [ "channel", "ipmitool channel setaccess 1 #{user_id} callin=on link=on ipmi=on privilege=4" ],
       [ "enable", "ipmitool user enable #{user_id}" ]
     ]
-
     user_commands.each do |param|
       item = param[0]
       command = param[1]
