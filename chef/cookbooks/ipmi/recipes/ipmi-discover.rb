@@ -32,7 +32,15 @@ end
 
 unsupported = [ "KVM", "Bochs", "VMWare Virtual Platform", "VMware Virtual Platform", "VirtualBox" ]
 
-if node[:ipmi][:bmc_enable]
+if node[:platform] == "windows"
+    node.set["crowbar_wall"] = {} unless node["crowbar_wall"]
+    node.set["crowbar_wall"]["status"] = {} unless node["crowbar_wall"]["status"]
+    node.set["crowbar_wall"]["status"]["ipmi"] = {} unless node["crowbar_wall"]["status"]["ipmi"]
+    node.set["crowbar_wall"]["status"]["ipmi"]["messages"] = [ "Unsupported platform - turning off ipmi for this node" ]
+    node.set[:ipmi][:bmc_enable] = false
+    node.save
+    return
+elsif node[:ipmi][:bmc_enable]
   if unsupported.member?(node[:dmi][:system][:product_name])
     node["crowbar_wall"] = {} unless node["crowbar_wall"]
     node["crowbar_wall"]["status"] = {} unless node["crowbar_wall"]["status"]
@@ -43,41 +51,39 @@ if node[:ipmi][:bmc_enable]
     return
   end
 
-  if node[:platform] != "windows"
-    ruby_block "discover ipmi settings" do
-      block do
-        if unsupported.member?(node[:dmi][:system][:product_name])
-          return
-        end
-        case node[:platform]
-        when "ubuntu","debian"
-          %x{modprobe ipmi_si; sleep 10}
-        end
-        %x{modprobe ipmi_devintf ; sleep 15}
-        %x{ipmitool lan print 1 > /tmp/lan.print}
-        if $?.exitstatus == 0
-          node["crowbar_wall"] = {} unless node["crowbar_wall"]
-          node["crowbar_wall"]["ipmi"] = {} unless node["crowbar_wall"]["ipmi"]
-          node["crowbar_wall"]["ipmi"]["address"] = %x{grep "IP Address   " /tmp/lan.print | awk -F" " '\{print $4\}'}.strip
-          node["crowbar_wall"]["ipmi"]["gateway"] = %x{grep "Default Gateway IP " /tmp/lan.print | awk -F" " '\{ print $5 \}'}.strip
-          node["crowbar_wall"]["ipmi"]["netmask"] = %x{grep "Subnet Mask" /tmp/lan.print | awk -F" " '\{ print $4 \}'}.strip
-          node["crowbar_wall"]["ipmi"]["mode"] = %x{ipmitool delloem lan get}.strip
-        else
-          node["crowbar_wall"] = {} unless node["crowbar_wall"]
-          node["crowbar_wall"]["status"] = {} unless node["crowbar_wall"]["status"]
-          node["crowbar_wall"]["status"]["ipmi"] = {} unless node["crowbar_wall"]["status"]["ipmi"]
-          node["crowbar_wall"]["status"]["ipmi"]["messages"] = [ "Could not get IPMI lan info: #{node[:dmi][:system][:product_name]} - turning off ipmi for this node" ]
-          node[:ipmi][:bmc_enable] = false
-        end
-        node.save
-        case node[:platform]
-        when "ubuntu","debian"
-          %x{rmmod ipmi_si}
-        end
-        %x{rmmod ipmi_devintf ; rmmod ipmi_msghandler}
+  ruby_block "discover ipmi settings" do
+    block do
+      if unsupported.member?(node[:dmi][:system][:product_name])
+        return
       end
-      action :create
+      case node[:platform]
+      when "ubuntu","debian"
+        %x{modprobe ipmi_si; sleep 10}
+      end
+      %x{modprobe ipmi_devintf ; sleep 15}
+      %x{ipmitool lan print 1 > /tmp/lan.print}
+      if $?.exitstatus == 0
+        node["crowbar_wall"] = {} unless node["crowbar_wall"]
+        node["crowbar_wall"]["ipmi"] = {} unless node["crowbar_wall"]["ipmi"]
+        node["crowbar_wall"]["ipmi"]["address"] = %x{grep "IP Address   " /tmp/lan.print | awk -F" " '\{print $4\}'}.strip
+        node["crowbar_wall"]["ipmi"]["gateway"] = %x{grep "Default Gateway IP " /tmp/lan.print | awk -F" " '\{ print $5 \}'}.strip
+        node["crowbar_wall"]["ipmi"]["netmask"] = %x{grep "Subnet Mask" /tmp/lan.print | awk -F" " '\{ print $4 \}'}.strip
+        node["crowbar_wall"]["ipmi"]["mode"] = %x{ipmitool delloem lan get}.strip
+      else
+        node["crowbar_wall"] = {} unless node["crowbar_wall"]
+        node["crowbar_wall"]["status"] = {} unless node["crowbar_wall"]["status"]
+        node["crowbar_wall"]["status"]["ipmi"] = {} unless node["crowbar_wall"]["status"]["ipmi"]
+        node["crowbar_wall"]["status"]["ipmi"]["messages"] = [ "Could not get IPMI lan info: #{node[:dmi][:system][:product_name]} - turning off ipmi for this node" ]
+        node[:ipmi][:bmc_enable] = false
+      end
+      node.save
+      case node[:platform]
+      when "ubuntu","debian"
+        %x{rmmod ipmi_si}
+      end
+      %x{rmmod ipmi_devintf ; rmmod ipmi_msghandler}
     end
+    action :create
   end
 end
 
