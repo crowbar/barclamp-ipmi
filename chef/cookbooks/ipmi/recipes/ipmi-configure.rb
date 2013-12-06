@@ -120,13 +120,16 @@ if node[:ipmi][:bmc_enable]
       [ "Dell BMC nic_mode", "ipmitool delloem lan set dedicated", "ipmitool delloem lan get", "dedicated", 10 ]
     ]
 
-    bmc_commands.each do |param| 
-      ipmi_bmc_command "bmc #{param[0]}" do
-        command param[1]
-        test param[2]
-        value param[3]
-        settle_time param[4]
-        action :run
+  
+    if !@@is_admin
+      bmc_commands.each do |param| 
+        ipmi_bmc_command "bmc #{param[0]}" do
+          command param[1]
+          test param[2]
+          value param[3]
+          settle_time param[4]
+          action :run
+        end
       end
     end
   end
