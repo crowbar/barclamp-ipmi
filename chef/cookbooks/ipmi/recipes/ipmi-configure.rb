@@ -116,7 +116,7 @@ if node[:ipmi][:bmc_enable]
     end
 
     bmc_commands = [
-      [ "BMC nic_mode", "/updates/bmc nic_mode set dedicated", "/updates/bmc nic_mode get", "dedicated", 10 ],
+      [ "BMC nic_mode", "/usr/bin/bmc nic_mode set dedicated", "/usr/bin/bmc nic_mode get", "dedicated", 10 ],
       [ "Dell BMC nic_mode", "ipmitool delloem lan set dedicated", "ipmitool delloem lan get", "dedicated", 10 ]
     ]
 
