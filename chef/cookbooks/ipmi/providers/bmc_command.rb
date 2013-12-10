@@ -28,13 +28,8 @@ action :run do
   value = new_resource.value
   settle_time = new_resource.settle_time
 
-  path = ""
-  path = "/tftpboot/ubuntu_dvd" unless ::File.exists?("/updates/bmc")
-  path = nil unless ::File.exists?("#{path}/updates/bmc")
-
-
-  if ::File.exists?("/sys/module/ipmi_devintf") and !path.nil?
-    unless check_bmc_value("#{path}#{test}", value)
+  if ::File.exists?("/sys/module/ipmi_devintf")
+    unless check_bmc_value("#{test}", value)
       # Set BMC LAN parameters 
       bash "#{name} settle time" do
         code "sleep #{settle_time}"
@@ -43,7 +38,7 @@ action :run do
 
       bash "bmc-set-#{name}" do
         code <<-EOH
-#{path}#{command}
+#{command}
 EOH
         returns [0,5]  # 5 = unsupported platform
         notifies :run, resources(:bash => "#{name} settle time"), :immediately
@@ -55,7 +50,7 @@ EOH
     end
   else
     node["crowbar_wall"]["status"]["ipmi"]["messages"] << "Unsupported product found #{node[:dmi][:system][:product_name]} - skipping IPMI:#{name}" unless node.nil?
-    node["crowbar_wall"]["status"]["ipmi"]["messages"] << "bmc tool not supported - skipping IPMI:#{name}" unless node.nil? or !path.nil?
+    node["crowbar_wall"]["status"]["ipmi"]["messages"] << "bmc tool not supported - skipping IPMI:#{name}" unless node.nil?
   end  
   node.save
 end
