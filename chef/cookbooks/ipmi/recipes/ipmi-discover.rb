@@ -21,7 +21,7 @@ include_recipe "utils"
 unless node[:platform] == "windows" or ::File.exists?("/usr/sbin/ipmitool") or ::File.exists?("/usr/bin/ipmitool")
   package "ipmitool" do
     case node[:platform]
-    when "ubuntu","debian"
+    when "ubuntu","debian","suse"
       package_name "ipmitool"
     when "redhat","centos"
       package_name "OpenIPMI-tools"
@@ -57,7 +57,7 @@ elsif node[:ipmi][:bmc_enable]
         return
       end
       case node[:platform]
-      when "ubuntu","debian"
+      when "ubuntu","debian","suse"
         %x{modprobe ipmi_si; sleep 10}
       end
       %x{modprobe ipmi_devintf ; sleep 15}
