@@ -29,21 +29,6 @@ crowbar:
   chef_order: 15
   proposal_schema_version: 2
 
-locale_additions:
-  en:
-    barclamp:
-      ipmi:
-        edit_attributes: 
-          attributes: Attributes
-          debug: Enable Barclamp Debug
-          use_dhcp: BMC Should Use DHCP (Not explicitly assigned)
-          ignore_suggestion: Ignore Already Configured Address
-          bmc_enable: Enable BMC
-          bmc_user: BMC User
-          bmc_password: BMC Password
-        edit_deployment: 
-          deployment: Deployment
-
 debs:
   pkgs:
     - ipmitool
