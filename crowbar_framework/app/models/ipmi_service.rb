@@ -16,8 +16,8 @@
 class IpmiService < ServiceObject
   
   def initialize(thelogger)
+    super(thelogger)
     @bc_name = "ipmi"
-    @logger = thelogger
   end
   
   def create_proposal
