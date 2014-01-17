@@ -29,28 +29,26 @@ action :run do
   settle_time = new_resource.settle_time
 
   if ::File.exists?("/sys/module/ipmi_devintf")
-    unless check_bmc_value("#{test}", value)
-      # Set BMC LAN parameters 
-      bash "#{name} settle time" do
-        code "sleep #{settle_time}"
-        action :nothing
+    unless check_bmc_value(test, value)
+      # Set BMC LAN parameters; we don't use a bash/script resource so we can
+      # immediately check if the command failed or not, and save the result
+      if system("#{command}")
+        %x{sleep #{settle_time}}
+        bmc_value_is_set = check_bmc_value(test, value)
+      else
+        bmc_value_is_set = false
       end
 
-      bash "bmc-set-#{name}" do
-        code <<-EOH
-#{command}
-EOH
-        returns [0,5]  # 5 = unsupported platform
-        notifies :run, resources(:bash => "#{name} settle time"), :immediately
-      end 
-
-      node["crowbar_wall"]["status"]["ipmi"]["messages"] << "#{name} set to #{value}" unless node.nil?
+      if bmc_value_is_set
+        node["crowbar_wall"]["status"]["ipmi"]["messages"] << "#{name} set to #{value}" unless node.nil?
+      else
+        node["crowbar_wall"]["status"]["ipmi"]["messages"] << "Unable to set #{name} to #{value}" unless node.nil?
+      end
     else
       node["crowbar_wall"]["status"]["ipmi"]["messages"] << "#{name} already set to #{value}" unless node.nil?
     end
   else
     node["crowbar_wall"]["status"]["ipmi"]["messages"] << "Unsupported product found #{node[:dmi][:system][:product_name]} - skipping IPMI:#{name}" unless node.nil?
-    node["crowbar_wall"]["status"]["ipmi"]["messages"] << "bmc tool not supported - skipping IPMI:#{name}" unless node.nil?
   end  
   node.save
 end
