@@ -29,7 +29,30 @@ barclamp:
 
 crowbar:
   layout: 2.0
-  order: 16
+
+roles:
+  - name: ipmi-discover
+    jig: chef-solo
+    requires:
+      - deployer-client
+    flags:
+      - implicit
+      - discovery
+  - name: ipmi-configure
+    jig: chef-solo
+    requires:
+      - provisioner-server
+      - network-bmc
+    wants-attribs:
+      - provisioner-webserver
+      - provisioner-proxy
+      - network-bmc-address
+      - network-bmc-netmask
+      - network-bmc-router
+      - network-bmc-use-vlan
+      - network-bmc-vlan
+    flags:
+      - implicit
 
 debs:
   pkgs:
@@ -54,3 +77,7 @@ rpms:
   opensuse-13.1:
     pkgs:
       - ipmitool
+
+extra_files:
+  # Utility for configuring Dell-specific BMC settings on PEC gear.
+  - http://poweredgec.com/files/bmc-2013-10-22.tgz
