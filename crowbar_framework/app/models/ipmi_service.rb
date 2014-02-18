@@ -39,7 +39,7 @@ class IpmiService < ServiceObject
       role = RoleObject.find_role_by_name "ipmi-config-#{inst}"
       result = add_role_to_instance_and_node("ipmi", inst, name, db, role, "ipmi-discover")
       @logger.debug("ipmi transition: leaving from installed state for #{name} for #{state}")
-      a = [200, NodeObject.find_node_by_name(name).to_hash ] if result
+      a = [200, { :name => name } ] if result
       a = [400, "Failed to add role to node"] unless result
       return a
     end
@@ -77,13 +77,13 @@ class IpmiService < ServiceObject
       end
 
       @logger.debug("ipmi transition: leaving from installed state for #{name} for #{state}")
-      a = [200, NodeObject.find_node_by_name(name).to_hash ] if result
+      a = [200, { :name => name } ] if result
       a = [400, "Failed to add role to node"] unless result
       return a
     end
     
     @logger.debug("ipmi transition: leaving for #{name} for #{state}")
-    [200, NodeObject.find_node_by_name(name).to_hash ]
+    [200, { :name => name } ]
   end
   
 end
