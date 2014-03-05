@@ -18,12 +18,4 @@
 #
 
 module IpmiBarclampHelper
-  def ipmi_role_contraints
-    {
-      "ipmi-configure" => {
-        "unique" => false,
-        "count" => -1
-      }
-    }
-  end
 end

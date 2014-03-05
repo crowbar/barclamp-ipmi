@@ -19,6 +19,19 @@ class IpmiService < ServiceObject
     super(thelogger)
     @bc_name = "ipmi"
   end
+
+  class << self
+    def role_constraints
+      @role_constraints ||= begin
+        {
+          "ipmi-configure" => {
+            "unique" => false,
+            "count" => -1
+          }
+        }
+      end
+    end
+  end
   
   def create_proposal
     @logger.debug("IPMI create_proposal: entering")
