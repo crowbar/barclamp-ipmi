@@ -22,14 +22,12 @@ class IpmiService < ServiceObject
 
   class << self
     def role_constraints
-      @role_constraints ||= begin
-        {
-          "ipmi-configure" => {
-            "unique" => false,
-            "count" => -1
-          }
+      {
+        "ipmi-configure" => {
+          "unique" => false,
+          "count" => -1
         }
-      end
+      }
     end
   end
   
