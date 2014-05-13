@@ -23,4 +23,8 @@ class IpmiController < BarclampController
   def initialize_service
     @service_object = IpmiService.new logger
   end
+
+  def permitted_params
+    params.require(:ipmi)
+  end
 end
