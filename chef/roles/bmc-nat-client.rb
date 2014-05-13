@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 name "bmc-nat-client"
 description "Sets up routes to access BMC addresses"
 run_list(
