@@ -16,7 +16,7 @@
 #
 
 class IpmiService < ServiceObject
-  
+
   def initialize(thelogger)
     super(thelogger)
     @bc_name = "ipmi"
@@ -32,17 +32,17 @@ class IpmiService < ServiceObject
       }
     end
   end
-  
+
   def create_proposal
     @logger.debug("IPMI create_proposal: entering")
     base = super
     @logger.debug("IPMI create_proposal: exiting")
     base
   end
-  
+
   def transition(inst, name, state)
     @logger.debug("IPMI transition: make sure that network role is on all nodes: #{name} for #{state}")
-    
+
     #
     # If we are discovering the node, make sure that we add the ipmi role to the node
     #
@@ -56,7 +56,7 @@ class IpmiService < ServiceObject
       a = [400, "Failed to add role to node"] unless result
       return a
     end
-    
+
     #
     # If we are discovering the node, make sure that we add the ipmi role to the node
     #
@@ -65,7 +65,7 @@ class IpmiService < ServiceObject
       db = ProposalObject.find_proposal "ipmi", inst
       role = RoleObject.find_role_by_name "ipmi-config-#{inst}"
       result = add_role_to_instance_and_node("ipmi", inst, name, db, role, "ipmi-configure")
-      
+
       node = NodeObject.find_node_by_name(name)
       # Add the bmc routing roles as appropriate.
       bmc_role = node.admin? ? "bmc-nat-router" : "bmc-nat-client"
@@ -81,7 +81,7 @@ class IpmiService < ServiceObject
         @logger.debug("ipmi transition: Done Allocate bmc address for #{name}")
         result = result[0] == 200
       else
-        # This enables other system to function because the bmc data is on the node, 
+        # This enables other system to function because the bmc data is on the node,
         # but no address is assigned.
         result = ns.enable_interface("default", "bmc", name)
         @logger.error("Failed to enable bmc interface for: #{name}: #{result[0]}") if result[0] != 200
@@ -94,9 +94,9 @@ class IpmiService < ServiceObject
       a = [400, "Failed to add role to node"] unless result
       return a
     end
-    
+
     @logger.debug("ipmi transition: leaving for #{name} for #{state}")
     [200, { :name => name } ]
   end
-  
+
 end
