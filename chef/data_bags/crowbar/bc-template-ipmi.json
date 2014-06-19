@@ -14,6 +14,7 @@
   "deployment": {
     "ipmi": {
       "crowbar-revision": 0,
+      "crowbar-applied": false,
       "element_states": {
         "ipmi-configure": [ "hardware-installing" ],
         "ipmi-discover": [ "discovering", "hardware-installing", "readying" ]
