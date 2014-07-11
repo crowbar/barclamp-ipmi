@@ -25,6 +25,7 @@ class IpmiService < ServiceObject
       {
         "ipmi-configure" => {
           "unique" => false,
+          "admin" => true,
           "count" => -1
         }
       }
