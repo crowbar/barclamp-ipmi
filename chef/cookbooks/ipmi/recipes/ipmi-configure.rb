@@ -1,5 +1,6 @@
 #
 # Copyright (c) 2011 Dell Inc.
+# Copyright (c) 2014 SUSE Linux GmbH.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -121,7 +122,7 @@ if node[:ipmi][:bmc_enable]
     ]
 
   
-    if !@@is_admin
+    unless CrowbarHelper.is_admin?(node)
       bmc_commands.each do |param| 
         ipmi_bmc_command "bmc #{param[0]}" do
           command param[1]
