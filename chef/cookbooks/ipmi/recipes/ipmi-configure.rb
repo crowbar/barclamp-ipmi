@@ -44,12 +44,12 @@ bmc_vlan     = if bmc_use_vlan
                  "off"
                end
 
-node["crowbar_wall"] = {} if node["crowbar_wall"].nil?
-node["crowbar_wall"]["status"] = {} if node["crowbar_wall"]["status"].nil?
+node.set["crowbar_wall"] = {} if node["crowbar_wall"].nil?
+node.set["crowbar_wall"]["status"] = {} if node["crowbar_wall"]["status"].nil?
 if node["crowbar_wall"]["status"]["ipmi"].nil?
-  node["crowbar_wall"]["status"]["ipmi"] = {}
-  node["crowbar_wall"]["status"]["ipmi"]["user_set"] = false
-  node["crowbar_wall"]["status"]["ipmi"]["address_set"] = false
+  node.set["crowbar_wall"]["status"]["ipmi"] = {}
+  node.set["crowbar_wall"]["status"]["ipmi"]["user_set"] = false
+  node.set["crowbar_wall"]["status"]["ipmi"]["address_set"] = false
   node.save
 end
 
@@ -57,8 +57,8 @@ unsupported = [ "KVM", "Bochs", "VMWare Virtual Platform", "VMware Virtual Platf
 
 if node[:ipmi][:bmc_enable]
   if unsupported.member?(node[:dmi][:system][:product_name])
-    node["crowbar_wall"]["status"]["ipmi"]["messages"] = [ "Unsupported platform: #{node[:dmi][:system][:product_name]} - turning off ipmi for this node" ]
-    node[:ipmi][:bmc_enable] = false
+    node.set["crowbar_wall"]["status"]["ipmi"]["messages"] = [ "Unsupported platform: #{node[:dmi][:system][:product_name]} - turning off ipmi for this node" ]
+    node.set[:ipmi][:bmc_enable] = false
     node.save
     return
   end
@@ -92,7 +92,7 @@ if node[:ipmi][:bmc_enable]
         end
       end
 
-      node["crowbar_wall"]["status"]["ipmi"]["address_set"] = true
+      node.set["crowbar_wall"]["status"]["ipmi"]["address_set"] = true
       node.save
     else
       ### lan parameters to check and set. The loop that follows iterates over this array.
