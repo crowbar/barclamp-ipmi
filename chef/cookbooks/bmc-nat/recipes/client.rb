@@ -32,5 +32,5 @@ bmc_cidr = IP::IP4.netmask_to_subnet(bmc_netmask)
 
 bash "Add route to get to our BMC via nat" do
   code "ip route add #{bmc_subnet}/#{bmc_cidr} via #{nat_address}"
-  not_if "ip route show via #{nat_address} |grep -q #{bmc_subnet}"
+  not_if "ip route show via #{nat_address} |grep -q #{bmc_subnet}/#{bmc_cidr}"
 end
