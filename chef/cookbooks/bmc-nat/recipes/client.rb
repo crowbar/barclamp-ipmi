@@ -28,7 +28,9 @@ nat_address = nat_node[:crowbar][:network][:admin][:address]
 
 return if admin_subnet == bmc_subnet && admin_netmask == bmc_netmask
 
+bmc_cidr = IP::IP4.netmask_to_subnet(bmc_netmask)
+
 bash "Add route to get to our BMC via nat" do
-  code "ip route add #{bmc_subnet}/#{bmc_netmask} via #{nat_address}"
-  not_if "ip route show via #{nat_address} |grep -q #{bmc_subnet}"
+  code "ip route add #{bmc_subnet}/#{bmc_cidr} via #{nat_address}"
+  not_if "ip route show via #{nat_address} |grep -q #{bmc_subnet}/#{bmc_cidr}"
 end
