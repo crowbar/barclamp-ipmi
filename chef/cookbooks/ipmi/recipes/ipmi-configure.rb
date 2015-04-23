@@ -44,10 +44,7 @@ bmc_vlan     = if bmc_use_vlan
                  "off"
                end
 
-node.set["crowbar_wall"] = {} if node["crowbar_wall"].nil?
-node.set["crowbar_wall"]["status"] = {} if node["crowbar_wall"]["status"].nil?
-if node["crowbar_wall"]["status"]["ipmi"].nil?
-  node.set["crowbar_wall"]["status"]["ipmi"] = {}
+if node["crowbar_wall"]["status"]["ipmi"]["user_set"].nil?
   node.set["crowbar_wall"]["status"]["ipmi"]["user_set"] = false
   node.set["crowbar_wall"]["status"]["ipmi"]["address_set"] = false
   node.save
