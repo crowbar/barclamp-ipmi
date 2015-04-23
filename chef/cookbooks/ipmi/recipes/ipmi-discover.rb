@@ -73,11 +73,17 @@ elsif node[:ipmi][:bmc_enable]
         node.set["crowbar_wall"]["status"]["ipmi"]["messages"] = [ "Could not find IPMI lan channel: #{node[:dmi][:system][:product_name]} - turning off ipmi for this node" ]
         node.set[:ipmi][:bmc_enable] = false
       else
-        %x{ipmitool lan print #{node["crowbar_wall"]["ipmi"]["channel"]} > /tmp/lan.print}
+        ipmiprint = %x{ipmitool lan print #{node["crowbar_wall"]["ipmi"]["channel"]}}
         if $?.exitstatus == 0
-          node.set["crowbar_wall"]["ipmi"]["address"] = %x{grep "IP Address   " /tmp/lan.print | awk -F" " '\{print $4\}'}.strip
-          node.set["crowbar_wall"]["ipmi"]["gateway"] = %x{grep "Default Gateway IP " /tmp/lan.print | awk -F" " '\{ print $5 \}'}.strip
-          node.set["crowbar_wall"]["ipmi"]["netmask"] = %x{grep "Subnet Mask" /tmp/lan.print | awk -F" " '\{ print $4 \}'}.strip
+          ipmiprint.split("\n").each do |l|
+            if l.start_with?("IP Address   ")
+              node.set["crowbar_wall"]["ipmi"]["address"] = l.split(":")[1].strip
+            elsif l.start_with?("Default Gateway IP ")
+              node.set["crowbar_wall"]["ipmi"]["gateway"] = l.split(":")[1].strip
+            elsif l.start_with?("Subnet Mask ")
+              node.set["crowbar_wall"]["ipmi"]["netmask"] = l.split(":")[1].strip
+            end
+          end
           node.set["crowbar_wall"]["ipmi"]["mode"] = %x{ipmitool delloem lan get}.strip
         else
           node.set["crowbar_wall"]["status"]["ipmi"]["messages"] = [ "Could not get IPMI lan info: #{node[:dmi][:system][:product_name]} - turning off ipmi for this node" ]
