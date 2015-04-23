@@ -61,15 +61,28 @@ elsif node[:ipmi][:bmc_enable]
         %x{modprobe ipmi_si; sleep 10}
       end
       %x{modprobe ipmi_devintf ; sleep 15}
-      %x{ipmitool lan print 1 > /tmp/lan.print}
-      if $?.exitstatus == 0
-        node.set["crowbar_wall"]["ipmi"]["address"] = %x{grep "IP Address   " /tmp/lan.print | awk -F" " '\{print $4\}'}.strip
-        node.set["crowbar_wall"]["ipmi"]["gateway"] = %x{grep "Default Gateway IP " /tmp/lan.print | awk -F" " '\{ print $5 \}'}.strip
-        node.set["crowbar_wall"]["ipmi"]["netmask"] = %x{grep "Subnet Mask" /tmp/lan.print | awk -F" " '\{ print $4 \}'}.strip
-        node.set["crowbar_wall"]["ipmi"]["mode"] = %x{ipmitool delloem lan get}.strip
-      else
-        node.set["crowbar_wall"]["status"]["ipmi"]["messages"] = [ "Could not get IPMI lan info: #{node[:dmi][:system][:product_name]} - turning off ipmi for this node" ]
+      (1..11).each do |n|
+        %x{ipmitool lan print #{n} 2> /dev/null | grep -q ^Set}
+        if $?.exitstatus == 0
+          node.set["crowbar_wall"]["ipmi"]["channel"] = n
+          break
+        end
+      end
+
+      if node["crowbar_wall"]["ipmi"]["channel"].nil?
+        node.set["crowbar_wall"]["status"]["ipmi"]["messages"] = [ "Could not find IPMI lan channel: #{node[:dmi][:system][:product_name]} - turning off ipmi for this node" ]
         node.set[:ipmi][:bmc_enable] = false
+      else
+        %x{ipmitool lan print #{node["crowbar_wall"]["ipmi"]["channel"]} > /tmp/lan.print}
+        if $?.exitstatus == 0
+          node.set["crowbar_wall"]["ipmi"]["address"] = %x{grep "IP Address   " /tmp/lan.print | awk -F" " '\{print $4\}'}.strip
+          node.set["crowbar_wall"]["ipmi"]["gateway"] = %x{grep "Default Gateway IP " /tmp/lan.print | awk -F" " '\{ print $5 \}'}.strip
+          node.set["crowbar_wall"]["ipmi"]["netmask"] = %x{grep "Subnet Mask" /tmp/lan.print | awk -F" " '\{ print $4 \}'}.strip
+          node.set["crowbar_wall"]["ipmi"]["mode"] = %x{ipmitool delloem lan get}.strip
+        else
+          node.set["crowbar_wall"]["status"]["ipmi"]["messages"] = [ "Could not get IPMI lan info: #{node[:dmi][:system][:product_name]} - turning off ipmi for this node" ]
+          node.set[:ipmi][:bmc_enable] = false
+        end
       end
       node.save
       case node[:platform]
