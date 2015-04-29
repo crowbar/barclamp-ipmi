@@ -17,7 +17,7 @@
 ## (if it's current value is different than desired one).
 def check_ipmi_lan_value(header, desired)
   c_awk = "awk -F: '/^#{header}[ \\t]*:/ { print $2 }'"
-  current = %x{ipmitool lan print 1 | #{c_awk} }
+  current = %x{ipmitool lan print #{node["crowbar_wall"]["ipmi"]["channel"]} | #{c_awk} }
   current = current.chomp.strip
   current.casecmp(desired) == 0
 end

@@ -44,10 +44,7 @@ bmc_vlan     = if bmc_use_vlan
                  "off"
                end
 
-node.set["crowbar_wall"] = {} if node["crowbar_wall"].nil?
-node.set["crowbar_wall"]["status"] = {} if node["crowbar_wall"]["status"].nil?
-if node["crowbar_wall"]["status"]["ipmi"].nil?
-  node.set["crowbar_wall"]["status"]["ipmi"] = {}
+if node["crowbar_wall"]["status"]["ipmi"]["user_set"].nil?
   node.set["crowbar_wall"]["status"]["ipmi"]["user_set"] = false
   node.set["crowbar_wall"]["status"]["ipmi"]["address_set"] = false
   node.save
@@ -80,7 +77,7 @@ if node[:ipmi][:bmc_enable]
       ### lan parameters to check and set. The loop that follows iterates over this array.
       # [0] = name in "print" output, [1] command to issue, [2] desired value.
       lan_params = [
-        [ "IP Address Source" ,"ipmitool lan set 1 ipsrc dhcp", "DHCP Address", 60 ]
+        [ "IP Address Source" ,"ipmitool lan set #{node["crowbar_wall"]["ipmi"]["channel"]} ipsrc dhcp", "DHCP Address", 60 ]
       ]
 
       lan_params.each do |param| 
@@ -98,13 +95,13 @@ if node[:ipmi][:bmc_enable]
       ### lan parameters to check and set. The loop that follows iterates over this array.
       # [0] = name in "print" output, [1] command to issue, [2] desired value.
       lan_params = [
-        [ "IP Address Source" ,"ipmitool lan set 1 ipsrc static", "Static Address", 10 ] ,
-        [ "IP Address" ,"ipmitool lan set 1 ipaddr #{bmc_address}", bmc_address, 1 ] ,
-        [ "Subnet Mask" , "ipmitool lan set 1 netmask #{bmc_netmask}", bmc_netmask, 1 ] ,
-        [ "Default VLAN", "ipmitool lan set 1 vlan id #{bmc_vlan}", bmc_vlan, 10 ]
+        [ "IP Address Source" ,"ipmitool lan set #{node["crowbar_wall"]["ipmi"]["channel"]} ipsrc static", "Static Address", 10 ] ,
+        [ "IP Address" ,"ipmitool lan set #{node["crowbar_wall"]["ipmi"]["channel"]} ipaddr #{bmc_address}", bmc_address, 1 ] ,
+        [ "Subnet Mask" , "ipmitool lan set #{node["crowbar_wall"]["ipmi"]["channel"]} netmask #{bmc_netmask}", bmc_netmask, 1 ] ,
+        [ "Default VLAN", "ipmitool lan set #{node["crowbar_wall"]["ipmi"]["channel"]} vlan id #{bmc_vlan}", bmc_vlan, 10 ]
       ]
 
-      lan_params << [ "Default Gateway IP", "ipmitool lan set 1 defgw ipaddr #{bmc_router}", bmc_router, 1 ] unless bmc_router.nil? || bmc_router.empty?
+      lan_params << [ "Default Gateway IP", "ipmitool lan set #{node["crowbar_wall"]["ipmi"]["channel"]} defgw ipaddr #{bmc_router}", bmc_router, 1 ] unless bmc_router.nil? || bmc_router.empty?
 
       lan_params.each do |param| 
         ipmi_lan_set "#{param[0]}" do
