@@ -62,7 +62,7 @@ elsif node[:ipmi][:bmc_enable]
       end
       %x{modprobe ipmi_devintf ; sleep 15}
       (1..11).each do |n|
-        %x{ipmitool lan print #{n} 2> /dev/null | grep -q ^Set}
+        %x{ipmitool -I open channel info #{n} 2> /dev/null | grep -q "Channel Medium Type *: *802.3 LAN"}
         if $?.exitstatus == 0
           node.set["crowbar_wall"]["ipmi"]["channel"] = n
           break
