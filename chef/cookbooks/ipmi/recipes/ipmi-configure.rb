@@ -112,24 +112,6 @@ if node[:ipmi][:bmc_enable]
         end
       end
     end
-
-    bmc_commands = [
-      [ "BMC nic_mode", "/usr/bin/bmc nic_mode set dedicated", "/usr/bin/bmc nic_mode get", "dedicated", 10 ],
-      [ "Dell BMC nic_mode", "ipmitool delloem lan set dedicated", "ipmitool delloem lan get", "dedicated", 10 ]
-    ]
-
-  
-    unless CrowbarHelper.is_admin?(node)
-      bmc_commands.each do |param| 
-        ipmi_bmc_command "bmc #{param[0]}" do
-          command param[1]
-          test param[2]
-          value param[3]
-          settle_time param[4]
-          action :run
-        end
-      end
-    end
   end
 
   unless node[:platform] == "windows" or node["crowbar_wall"]["status"]["ipmi"]["user_set"]
