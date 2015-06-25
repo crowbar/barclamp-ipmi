@@ -19,6 +19,7 @@ About this barclamp
 [![Code Climate](https://codeclimate.com/github/crowbar/barclamp-ipmi/badges/gpa.svg)](https://codeclimate.com/github/crowbar/barclamp-ipmi)
 [![Test Coverage](https://codeclimate.com/github/crowbar/barclamp-ipmi/badges/coverage.svg)](https://codeclimate.com/github/crowbar/barclamp-ipmi)
 [![Dependency Status](https://gemnasium.com/crowbar/barclamp-ipmi.svg)](https://gemnasium.com/crowbar/barclamp-ipmi)
+[![Join the chat at https://gitter.im/crowbar](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/crowbar)
 
 Information for this barclamp is maintained on the [Crowbar Framework Wiki](https://github.com/crowbar/crowbar/wiki)
 
