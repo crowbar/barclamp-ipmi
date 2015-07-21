@@ -30,7 +30,14 @@ unless node[:platform] == "windows" or ::File.exists?("/usr/sbin/ipmitool") or :
   end
 end
 
-unsupported = [ "KVM", "Bochs", "VMWare Virtual Platform", "VMware Virtual Platform", "VirtualBox" ]
+unsupported = [
+  "KVM",
+  "Bochs",
+  "VMWare Virtual Platform",
+  "VMware Virtual Platform",
+  "VirtualBox",
+  "Unknown (Not Detected)"
+]
 
 node.set["crowbar_wall"] = {} unless node["crowbar_wall"]
 node.set["crowbar_wall"]["ipmi"] = {} unless node["crowbar_wall"]["ipmi"]
@@ -100,4 +107,3 @@ elsif node[:ipmi][:bmc_enable]
     action :create
   end
 end
-
