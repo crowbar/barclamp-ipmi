@@ -16,6 +16,7 @@
 # Note : This script runs on both the admin and compute nodes.
 # It intentionally ignores the bios->enable node data flag.
 
+return if node[:platform_family] == "windows"
 nets = node[:crowbar][:network] || return
 nets[:bmc] && nets[:admin] || return
 bmc_subnet    = nets[:bmc][:subnet]
