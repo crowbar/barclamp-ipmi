@@ -98,7 +98,7 @@ if node[:ipmi][:bmc_enable]
         [ "IP Address Source" ,"ipmitool lan set #{node["crowbar_wall"]["ipmi"]["channel"]} ipsrc static", "Static Address", 10 ] ,
         [ "IP Address" ,"ipmitool lan set #{node["crowbar_wall"]["ipmi"]["channel"]} ipaddr #{bmc_address}", bmc_address, 1 ] ,
         [ "Subnet Mask" , "ipmitool lan set #{node["crowbar_wall"]["ipmi"]["channel"]} netmask #{bmc_netmask}", bmc_netmask, 1 ] ,
-        [ "Default VLAN", "ipmitool lan set #{node["crowbar_wall"]["ipmi"]["channel"]} vlan id #{bmc_vlan}", bmc_vlan, 10 ]
+        [ "Default VLAN", "ipmitool lan set #{node["crowbar_wall"]["ipmi"]["channel"]} vlan id #{bmc_vlan}", bmc_vlan.to_s, 10 ]
       ]
 
       lan_params << [ "Default Gateway IP", "ipmitool lan set #{node["crowbar_wall"]["ipmi"]["channel"]} defgw ipaddr #{bmc_router}", bmc_router, 1 ] unless bmc_router.nil? || bmc_router.empty?
